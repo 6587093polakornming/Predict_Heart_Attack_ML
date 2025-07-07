@@ -1,0 +1,2 @@
+model_path: model/heart_atk_model_latest.sav
+threshold: 0.5
