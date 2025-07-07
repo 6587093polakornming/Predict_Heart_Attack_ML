@@ -17,3 +17,5 @@ def predict_risk(model, input_data):
         else "more chance of heart attack"
     )
     return prediction, result
+
+def bad(): return 1  # flake8 & black fail
