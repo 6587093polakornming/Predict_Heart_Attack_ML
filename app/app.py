@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from app.model_utils import load_model, predict_risk
-import yaml
 import logging
 import os
+
+import yaml
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+from app.model_utils import load_model, predict_risk
 
 # Ensure logs directory exists
 os.makedirs("logs", exist_ok=True)
@@ -19,7 +21,7 @@ except Exception as e:
 logging.basicConfig(
     filename="logs/monitoring.log",
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
 # Load ML model
@@ -28,17 +30,21 @@ try:
 except Exception as e:
     raise RuntimeError(f"Error loading model: {e}")
 
+
 # Define input schema
 class InputData(BaseModel):
     thalachh: float
     exng: int
     oldpeak: float
 
+
 app = FastAPI()
+
 
 @app.get("/")
 def root():
     return {"message": "Heart attack risk predictor is running."}
+
 
 @app.post("/predict")
 def predict(data: InputData):
@@ -48,13 +54,8 @@ def predict(data: InputData):
         prediction, result = predict_risk(model, input_dict)
 
         logging.info(f"Input: {input_dict} → Pred: {result}")
-        return {
-            "prediction": int(prediction),
-            "result": result,
-            "input": input_dict
-        }
+        return {"prediction": int(prediction), "result": result, "input": input_dict}
 
     except Exception as e:
         logging.error(f"Prediction error: {e}")
         raise HTTPException(status_code=500, detail="Internal prediction error")
-
